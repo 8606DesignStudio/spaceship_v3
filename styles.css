@@ -179,3 +179,36 @@ body {
 .dial:hover { 
     transform: scale(1.05); 
 }
+.dial {
+    position: relative;
+    overflow: hidden;
+}
+
+.dial-number {
+    display: block;
+    transition: transform 0.3s ease-in-out;
+}
+
+.dial-number.slide-out-left {
+    transform: translateX(-100%);
+}
+
+.dial-number.slide-in-right {
+    transform: translateX(0);
+}
+
+.dial-number.slide-out-right {
+    transform: translateX(100%);
+}
+
+.dial-number.slide-in-left {
+    transform: translateX(0);
+}
+
+.dial-number.preparing-right {
+    transform: translateX(100%);
+}
+
+.dial-number.preparing-left {
+    transform: translateX(-100%);
+}
