@@ -16,134 +16,86 @@ async function loadEpisodes() {
     }
 }
 
-let currentEpisode = 0;
-const maxEpisode = 146; // Based on your data
+let numbers = [0, 0, 0];
 
 // Initialize episodes loading
 loadEpisodes();
 
-// Create the single dial container
-document.getElementById('dials').innerHTML = `
-    <div class="dial-container">
-        <div class="dial-track" id="dialTrack">
-            <div class="dial-handle" id="dialHandle"></div>
-        </div>
-        <div class="episode-number" id="episodeNumber">${currentEpisode}</div>
-    </div>
-`;
+document.getElementById('dials').innerHTML = numbers.map((n, i) => 
+    `<div class="dial" data-dial-index="${i}">${n}</div>`
+).join('');
 
-const dialTrack = document.getElementById('dialTrack');
-const dialHandle = document.getElementById('dialHandle');
-const episodeNumber = document.getElementById('episodeNumber');
-
-let isDragging = false;
-let startX = 0;
-let startEpisode = 0;
-
-// Mouse events
-dialHandle.addEventListener('mousedown', handleStart);
-document.addEventListener('mousemove', handleMove);
-document.addEventListener('mouseup', handleEnd);
-
-// Touch events
-dialHandle.addEventListener('touchstart', handleTouchStart);
-document.addEventListener('touchmove', handleTouchMove);
-document.addEventListener('touchend', handleEnd);
-
-// Keyboard events
-document.addEventListener('keydown', handleKeyboard);
-
-function handleStart(e) {
-    isDragging = true;
-    startX = e.clientX || e.touches[0].clientX;
-    startEpisode = currentEpisode;
-    dialHandle.style.cursor = 'grabbing';
-    e.preventDefault();
-}
-
-function handleTouchStart(e) {
-    isDragging = true;
-    startX = e.touches[0].clientX;
-    startEpisode = currentEpisode;
-    e.preventDefault();
-}
-
-function handleMove(e) {
-    if (!isDragging) return;
-    
-    const currentX = e.clientX;
-    const deltaX = currentX - startX;
-    const sensitivity = 3; // Adjust this to change sensitivity
-    
-    const newEpisode = Math.max(0, Math.min(maxEpisode, startEpisode + Math.floor(deltaX / sensitivity)));
-    
-    if (newEpisode !== currentEpisode) {
-        currentEpisode = newEpisode;
-        update();
-    }
-    
-    e.preventDefault();
-}
-
-function handleTouchMove(e) {
-    if (!isDragging) return;
-    
-    const currentX = e.touches[0].clientX;
-    const deltaX = currentX - startX;
-    const sensitivity = 3;
-    
-    const newEpisode = Math.max(0, Math.min(maxEpisode, startEpisode + Math.floor(deltaX / sensitivity)));
-    
-    if (newEpisode !== currentEpisode) {
-        currentEpisode = newEpisode;
-        update();
-    }
-    
-    e.preventDefault();
-}
-
-function handleEnd(e) {
-    if (isDragging) {
-        isDragging = false;
-        dialHandle.style.cursor = 'grab';
-    }
-}
-
-function handleKeyboard(e) {
-    if (e.key === 'ArrowLeft') {
-        currentEpisode = Math.max(0, currentEpisode - 1);
-        update();
-        e.preventDefault();
-    } else if (e.key === 'ArrowRight') {
-        currentEpisode = Math.min(maxEpisode, currentEpisode + 1);
-        update();
-        e.preventDefault();
-    }
-}
-
-// Wheel event for mouse scroll
-dialTrack.addEventListener('wheel', (e) => {
-    e.preventDefault();
-    const delta = e.deltaY > 0 ? 1 : -1;
-    currentEpisode = Math.max(0, Math.min(maxEpisode, currentEpisode + delta));
-    update();
+const dialElements = document.querySelectorAll('.dial');
+dialElements.forEach((dial, i) => {
+    dial.addEventListener('click', () => spin(i));
+    dial.addEventListener('touchstart', (e) => handleTouchStart(e, i));
+    dial.addEventListener('touchend', handleTouchEnd);
 });
 
+function spin(i) {
+    numbers[i] = (numbers[i] + 1) % 10;
+    
+    if (numbers[i] === 0 && i > 0) {
+        spin(i - 1);
+    }
+    
+    update();
+}
+
+function spinDown(i) {
+    const oldValue = numbers[i];
+    numbers[i] = (numbers[i] - 1 + 10) % 10;
+    
+    if (oldValue === 0 && i > 0) {
+        spinDown(i - 1);
+    }
+    
+    update();
+}
+
+let touchStartY = 0;
+let currentDial = -1;
+
+function handleTouchStart(e, dialIndex) {
+    touchStartY = e.touches[0].clientY;
+    currentDial = dialIndex;
+    e.preventDefault();
+}
+
+function handleTouchEnd(e) {
+    if (currentDial === -1) return;
+    
+    const touchEndY = e.changedTouches[0].clientY;
+    const deltaY = touchStartY - touchEndY;
+    const threshold = 30;
+    
+    if (Math.abs(deltaY) > threshold) {
+        if (deltaY > 0) {
+            spin(currentDial);
+        } else {
+            spinDown(currentDial);
+        }
+    } else {
+        spin(currentDial);
+    }
+    
+    currentDial = -1;
+    e.preventDefault();
+}
+
 function update() {
-    // Update episode number display
-    episodeNumber.textContent = currentEpisode;
+    const dialElements = document.querySelectorAll('.dial');
+    dialElements.forEach((dial, i) => {
+        dial.textContent = numbers[i];
+    });
     
-    // Update handle position
-    const percentage = (currentEpisode / maxEpisode) * 100;
-    dialHandle.style.left = `${percentage}%`;
+    const episodeNum = numbers[0] * 100 + numbers[1] * 10 + numbers[2];
     
-    // Update episode content
+    // Only show "Loading..." if episodes haven't been loaded yet
+    // Otherwise show the episode or empty string for non-existent episodes
     if (episodes.length === 0) {
         document.getElementById('episode').innerHTML = "Loading...";
     } else {
-        document.getElementById('episode').innerHTML = episodes[currentEpisode] || "";
+        document.getElementById('episode').innerHTML = episodes[episodeNum] || "";
     }
 }
-
-// Initialize
-update();
