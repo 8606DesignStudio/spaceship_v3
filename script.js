@@ -1,4 +1,4 @@
-// Load episodes data
+// Load episodes data with Firefox-compatible cache busting
 let episodes = {};
 
 // Dynamic import with Firefox compatibility
@@ -6,9 +6,10 @@ async function loadEpisodes() {
     try {
         const module = await import('./data/generatedEpisodes.js?t=' + Math.random());
         episodes = module.episodes;
-        update();
+        update(); // Update display after episodes are loaded
     } catch (error) {
         console.error('Failed to load episodes:', error);
+        // Fallback to static import
         const fallbackModule = await import('./data/generatedEpisodes.js');
         episodes = fallbackModule.episodes;
         update();
@@ -17,139 +18,69 @@ async function loadEpisodes() {
 
 let currentNumber = 0;
 
-// Initialize
+// Initialize episodes loading
 loadEpisodes();
+
 document.getElementById('dials').innerHTML = `<div class="dial" data-dial-index="0">${currentNumber}</div>`;
 
-// Touch/swipe variables
-let startX = 0;
-let startTime = 0;
-let isAnimating = false;
-
-// Get dial element and add event listeners
 const dialElement = document.querySelector('.dial');
+dialElement.addEventListener('click', () => spin());
+dialElement.addEventListener('touchstart', (e) => handleTouchStart(e));
+dialElement.addEventListener('touchend', handleTouchEnd);
 
-// Mouse events
-dialElement.addEventListener('mousedown', handleStart);
-document.addEventListener('mousemove', handleMove);
-document.addEventListener('mouseup', handleEnd);
-
-// Touch events
-dialElement.addEventListener('touchstart', handleStart, { passive: false });
-document.addEventListener('touchmove', handleMove, { passive: false });
-document.addEventListener('touchend', handleEnd);
-
-// Click fallback
-dialElement.addEventListener('click', handleClick);
-
-function handleStart(e) {
-    if (isAnimating) return;
+function spin() {
+    currentNumber = (currentNumber + 1) % 147; // 0-146 episodes
     
-    e.preventDefault();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    startX = clientX;
-    startTime = Date.now();
-    dialElement.style.cursor = 'grabbing';
-}
-
-function handleMove(e) {
-    if (startX === 0 || isAnimating) return;
-    
-    e.preventDefault();
-    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
-    const deltaX = clientX - startX;
-    
-    // Visual feedback during drag
-    const rotation = deltaX * 0.5;
-    dialElement.style.transform = `rotate(${rotation}deg) scale(1.05)`;
-}
-
-function handleEnd(e) {
-    if (startX === 0 || isAnimating) return;
-    
-    const clientX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
-    const deltaX = clientX - startX;
-    const deltaTime = Date.now() - startTime;
-    const velocity = Math.abs(deltaX) / deltaTime;
-    
-    // Reset cursor
-    dialElement.style.cursor = 'grab';
-    
-    // Calculate steps based on distance and velocity
-    let steps = 0;
-    if (Math.abs(deltaX) > 20) { // Minimum swipe distance
-        steps = Math.round(Math.abs(deltaX) / 30); // Base steps on distance
-        if (velocity > 0.5) { // Add momentum for fast swipes
-            steps += Math.round(velocity * 5);
-        }
-        steps = Math.max(1, Math.min(steps, 20)); // Limit steps
-        
-        if (deltaX < 0) steps = -steps; // Negative for left swipe
-    }
-    
-    // Reset position
-    startX = 0;
-    
-    if (steps !== 0) {
-        animateSteps(steps);
-    } else {
-        // Reset transform if no movement
-        dialElement.style.transform = '';
-    }
-}
-
-function handleClick(e) {
-    if (isAnimating || startX !== 0) return;
-    
-    // Simple click advances by 1
-    currentNumber = (currentNumber + 1) % 147;
     update();
 }
 
-function animateSteps(steps) {
-    if (isAnimating) return;
+function spinDown() {
+    currentNumber = (currentNumber - 1 + 147) % 147; // 0-146 episodes
     
-    isAnimating = true;
-    const totalSteps = Math.abs(steps);
-    const direction = steps > 0 ? 1 : -1;
-    let currentStep = 0;
+    update();
+}
+
+let touchStartY = 0;
+let touchActive = false;
+
+function handleTouchStart(e) {
+    touchStartY = e.touches[0].clientY;
+    touchActive = true;
+    e.preventDefault();
+}
+
+function handleTouchEnd(e) {
+    if (!touchActive) return;
     
-    function animateStep() {
-        if (currentStep >= totalSteps) {
-            isAnimating = false;
-            dialElement.style.transform = '';
-            return;
+    const touchEndY = e.changedTouches[0].clientY;
+    const deltaY = touchStartY - touchEndY;
+    const threshold = 30;
+    
+    if (Math.abs(deltaY) > threshold) {
+        if (deltaY > 0) {
+            spin();
+        } else {
+            spinDown();
         }
-        
-        // Update episode number
-        currentNumber = (currentNumber + direction + 147) % 147;
-        update();
-        
-        // Visual animation
-        const progress = currentStep / totalSteps;
-        const easing = 1 - Math.pow(1 - progress, 3); // Ease out cubic
-        const rotation = (1 - easing) * direction * 180;
-        const scale = 1 + (1 - easing) * 0.1;
-        
-        dialElement.style.transform = `rotate(${rotation}deg) scale(${scale})`;
-        
-        currentStep++;
-        
-        // Slow down over time
-        const delay = 50 + (currentStep * 20);
-        setTimeout(animateStep, delay);
+    } else {
+        spin();
     }
     
-    animateStep();
+    touchActive = false;
+    e.preventDefault();
 }
 
 function update() {
     const dialElement = document.querySelector('.dial');
     dialElement.textContent = currentNumber;
     
+    const episodeNum = currentNumber;
+    
+    // Only show "Loading..." if episodes haven't been loaded yet
+    // Otherwise show the episode or empty string for non-existent episodes
     if (episodes.length === 0) {
-        document.getElementById('episode').innerHTML = "";
+        document.getElementById('episode').innerHTML = "Loading...";
     } else {
-        document.getElementById('episode').innerHTML = episodes[currentNumber] || "";
+        document.getElementById('episode').innerHTML = episodes[episodeNum] || "";
     }
 }
