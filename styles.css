@@ -75,10 +75,25 @@ body {
 }
 
 .stripe-button {
-    position: absolute;
-    bottom: 20px;
-    left: 20px;
+    position: fixed;
+    bottom: calc(50vh - 25vh + 20px);
+    left: calc(50vw - 50vh * 0.75 + 20px);
     z-index: 1000;
+}
+
+/* Adjust button position for mobile */
+@media (max-width: 767px) {
+    .stripe-button {
+        bottom: 20px;
+        left: 20px;
+    }
+}
+
+/* Adjust button position for very wide screens */
+@media (min-width: 768px) and (min-aspect-ratio: 4/3) {
+    .stripe-button {
+        left: calc(50vw - 33.33vw + 20px);
+    }
 }
 
 .stripe-button a {
