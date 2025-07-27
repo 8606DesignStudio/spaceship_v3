@@ -184,7 +184,7 @@ body {
     position: absolute;
     top: -60px;
     left: 50%;
-    transform: translateX(-50%);
+    transform: translateX(-50%) scaleX(5);
     font-size: 2rem;
     color: #ffd700;
     text-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
