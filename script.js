@@ -58,11 +58,11 @@ function handleTouchEnd(e) {
     // Check if horizontal swipe is more significant than vertical
     if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > threshold) {
         if (deltaX > 0) {
-            // Swiped left (forward)
-            spin();
-        } else {
-            // Swiped right (backward)
+            // Swiped left (backward)
             spinDown();
+        } else {
+            // Swiped right (forward)
+            spin();
         }
     } else {
         // Default to forward if no clear swipe direction
