@@ -27,6 +27,7 @@ document.getElementById('dials').innerHTML = `<div class="dial">${String(current
 const dialElement = document.querySelector('.dial');
 dialElement.addEventListener('click', () => spin());
 dialElement.addEventListener('touchstart', (e) => handleTouchStart(e));
+dialElement.addEventListener('touchmove', (e) => handleTouchMove(e));
 dialElement.addEventListener('touchend', handleTouchEnd);
 
 function spin() {
@@ -41,49 +42,57 @@ function spinDown() {
 
 let touchStartY = 0;
 let touchStartX = 0;
+let lastTouchX = 0;
+let baseEpisodeNumber = 0;
 const swipeSensitivity = 30; // Pixels per episode change
 
 function handleTouchStart(e) {
     touchStartY = e.touches[0].clientY;
     touchStartX = e.touches[0].clientX;
+    lastTouchX = touchStartX;
+    baseEpisodeNumber = currentNumber;
+    e.preventDefault();
+}
+
+function handleTouchMove(e) {
+    const currentTouchX = e.touches[0].clientX;
+    const deltaX = currentTouchX - touchStartX;
+    
+    // Calculate episode change based on swipe distance
+    const episodeChange = Math.floor(Math.abs(deltaX) / swipeSensitivity);
+    
+    if (Math.abs(deltaX) > 10) { // Only start changing after 10px to avoid jitter
+        let newEpisodeNumber;
+        
+        if (deltaX > 0) {
+            // Swiping right - increase episode number
+            newEpisodeNumber = (baseEpisodeNumber + episodeChange) % (maxEpisode + 1);
+        } else {
+            // Swiping left - decrease episode number
+            newEpisodeNumber = (baseEpisodeNumber - episodeChange + maxEpisode + 1) % (maxEpisode + 1);
+        }
+        
+        // Update the dial display in real-time
+        currentNumber = newEpisodeNumber;
+        updateDialOnly();
+    }
+    
+    lastTouchX = currentTouchX;
     e.preventDefault();
 }
 
 function handleTouchEnd(e) {
-    const touchEndY = e.changedTouches[0].clientY;
-    const touchEndX = e.changedTouches[0].clientX;
-    const deltaY = touchStartY - touchEndY;
-    const deltaX = touchStartX - touchEndX;
-    const threshold = 30;
-    
-    // Check if horizontal swipe is more significant than vertical
-    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > threshold) {
-        // Calculate how many episodes to change based on swipe distance
-        const swipeDistance = Math.abs(deltaX);
-        const episodeChanges = Math.max(1, Math.floor(swipeDistance / swipeSensitivity));
-        
-        if (deltaX > 0) {
-            // Swiped left (backward) - decrease episode number
-            for (let i = 0; i < episodeChanges; i++) {
-                spinDown();
-            }
-        } else {
-            // Swiped right (forward) - increase episode number
-            for (let i = 0; i < episodeChanges; i++) {
-                spin();
-            }
-        }
-    } else {
-        // Default to forward if no clear swipe direction
-        spin();
-    }
+    // Update the episode content to match the current dial number
+    updateEpisodeContent();
     e.preventDefault();
 }
 
-function update() {
+function updateDialOnly() {
     const dialElement = document.querySelector('.dial');
     dialElement.textContent = String(currentNumber).padStart(3, '0');
-    
+}
+
+function updateEpisodeContent() {
     // Only show "Loading..." if episodes haven't been loaded yet
     // Otherwise show the episode or empty string for non-existent episodes
     if (episodes.length === 0) {
@@ -91,4 +100,9 @@ function update() {
     } else {
         document.getElementById('episode').innerHTML = episodes[currentNumber] || "";
     }
+}
+
+function update() {
+    updateDialOnly();
+    updateEpisodeContent();
 }
