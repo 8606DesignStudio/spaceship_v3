@@ -47,12 +47,16 @@ let lastTouchTime = 0;
 let baseEpisodeNumber = 0;
 const swipeSensitivity = 30; // Pixels per episode change
 let momentumAnimation = null;
+let lastMoveX = 0;
+let lastMoveTime = 0;
 
 function handleTouchStart(e) {
     touchStartY = e.touches[0].clientY;
     touchStartX = e.touches[0].clientX;
     lastTouchX = touchStartX;
+    lastMoveX = touchStartX;
     lastTouchTime = Date.now();
+    lastMoveTime = Date.now();
     baseEpisodeNumber = currentNumber;
     
     // Stop any existing momentum
@@ -68,6 +72,10 @@ function handleTouchMove(e) {
     const currentTouchX = e.touches[0].clientX;
     const currentTime = Date.now();
     const deltaX = currentTouchX - touchStartX;
+    
+    // Track movement for velocity calculation
+    lastMoveX = currentTouchX;
+    lastMoveTime = currentTime;
     
     // Calculate episode change based on swipe distance
     const episodeChange = Math.floor(Math.abs(deltaX) / swipeSensitivity);
@@ -94,17 +102,20 @@ function handleTouchMove(e) {
 }
 
 function handleTouchEnd(e) {
-    // Calculate velocity for momentum
-    const currentTime = Date.now();
-    const timeDelta = currentTime - lastTouchTime;
     const finalTouchX = e.changedTouches[0].clientX;
-    const distanceDelta = finalTouchX - lastTouchX;
+    const currentTime = Date.now();
+    
+    // Calculate velocity based on recent movement
+    const timeDelta = currentTime - lastMoveTime;
+    const distanceDelta = finalTouchX - lastMoveX;
     
     // Calculate velocity (pixels per millisecond)
-    const velocity = timeDelta > 0 ? distanceDelta / timeDelta : 0;
+    const velocity = timeDelta > 0 && timeDelta < 100 ? distanceDelta / timeDelta : 0;
+    
+    console.log('Velocity:', velocity, 'Distance:', distanceDelta, 'Time:', timeDelta);
     
     // Start momentum animation if velocity is significant
-    if (Math.abs(velocity) > 0.1) { // Minimum velocity threshold
+    if (Math.abs(velocity) > 0.3) { // Minimum velocity threshold
         startMomentum(velocity);
     } else {
         // Just update content if no momentum
@@ -115,30 +126,35 @@ function handleTouchEnd(e) {
 }
 
 function startMomentum(initialVelocity) {
-    let velocity = initialVelocity * 5; // Amplify the initial velocity
-    const friction = 0.98; // Reduced friction for longer momentum (0.98 = 2% loss per frame)
-    const minVelocity = 0.02; // Lower threshold for longer spinning
+    let velocity = initialVelocity * 20; // Much higher amplification
+    const friction = 0.96; // More friction for better control
+    const minVelocity = 0.1; // Higher threshold to stop sooner
+    
+    console.log('Starting momentum with velocity:', velocity);
     
     function animateMomentum() {
         // Apply friction
         velocity *= friction;
         
+        console.log('Current velocity:', velocity);
+        
         // Stop if velocity is too small
         if (Math.abs(velocity) < minVelocity) {
             momentumAnimation = null;
+            console.log('Momentum stopped');
             updateEpisodeContent();
             return;
         }
         
         // Calculate episode change based on current velocity
-        const episodeChange = Math.floor(Math.abs(velocity * 32) / swipeSensitivity); // Doubled the frame multiplier for faster changes
+        const episodeChange = Math.max(1, Math.floor(Math.abs(velocity) * 2)); // Simpler calculation
         
         if (episodeChange > 0) {
             if (velocity > 0) {
-                // Moving right - increase episode number
+                // Positive velocity - increase episode number
                 currentNumber = (currentNumber + episodeChange) % (maxEpisode + 1);
             } else {
-                // Moving left - decrease episode number
+                // Negative velocity - decrease episode number
                 currentNumber = (currentNumber - episodeChange + maxEpisode + 1) % (maxEpisode + 1);
             }
             updateDialOnly();
