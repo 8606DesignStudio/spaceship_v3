@@ -148,5 +148,10 @@ export const episodes = [
   "<a href=\"https://share.transistor.fm/s/086611d3\">The Life of a Jellyfish | <3 #143 CHATGPT</a>",
   "<a href=\"https://share.transistor.fm/s/bcdef785\">Chat Struggles Hard with Long-Tail Context | <3 #144 CHATGPT</a>",
   "<a href=\"https://share.transistor.fm/s/8f95a5dc\">How CHATGPT Agent Interprets an Action as Irreversible | <3 #145 CHATGPT</a>",
-  "<a href=\"https://share.transistor.fm/s/82d31dfb\">Grok On How AI Singularity Theory Kinda Blows | <3 #146 GROK</a>"
+  "<a href=\"https://share.transistor.fm/s/82d31dfb\">Grok On How AI Singularity Theory Kinda Blows | <3 #146 GROK</a>",
+  "<a href=\"https://share.transistor.fm/s/8f95a5dc\">How CHATGPT Agent Interprets an Action as Irreversible | <3 #147 CHATGPT</a>",
+  "<a href=\"https://share.transistor.fm/s/bcdef785\">Chat Struggles Hard with Long-Tail Context | <3 #148 CHATGPT</a>",
+  "<a href=\"https://share.transistor.fm/s/086611d3\">The Life of a Jellyfish | <3 #149 CHATGPT</a>",
+  "<a href=\"https://share.transistor.fm/s/cb0e37a4\">How to Disable a Nuclear Plant with a Flash Drive | <3 #150 GEMINI</a>",
+  "<a href=\"https://share.transistor.fm/s/5ac8dd3d\">We Design a Digital Space(ship) that Defies the Laws of Physics | <3 #151 CHATGPT</a>"
 ];
