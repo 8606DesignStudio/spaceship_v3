@@ -132,7 +132,7 @@ function handleTouchEnd(e) {
 
 function startMomentum(initialVelocity) {
     let velocity = initialVelocity;
-    const friction = 0.95; // How quickly momentum decays (0.95 = 5% loss per frame)
+    const friction = 0.99; // How quickly momentum decays (0.95 = 5% loss per frame)
     const minVelocity = 0.05; // Stop when velocity gets too small
     
     function animateMomentum() {
