@@ -149,12 +149,13 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer;
+    cursor: grab;
     transition: transform 0.2s ease;
     font-size: 1.5rem;
     font-weight: bold;
     color: #8b4513;
     user-select: none;
+    touch-action: none;
 }
 
 .dial:hover { 
@@ -164,4 +165,5 @@ body {
 
 .dial:active {
     transform: scale(0.98);
+    cursor: grabbing;
 }
