@@ -1,7 +1,25 @@
-// Force reload of episodes data
-import { episodes } from './data/generatedEpisodes.js?v=' + Date.now();
+// Load episodes data with Firefox-compatible cache busting
+let episodes = {};
+
+// Dynamic import with Firefox compatibility
+async function loadEpisodes() {
+    try {
+        const module = await import('./data/generatedEpisodes.js?t=' + Math.random());
+        episodes = module.episodes;
+        update(); // Update display after episodes are loaded
+    } catch (error) {
+        console.error('Failed to load episodes:', error);
+        // Fallback to static import
+        const fallbackModule = await import('./data/generatedEpisodes.js');
+        episodes = fallbackModule.episodes;
+        update();
+    }
+}
 
 let numbers = [0, 0, 0];
+
+// Initialize episodes loading
+loadEpisodes();
 
 document.getElementById('dials').innerHTML = numbers.map((n, i) => 
     `<div class="dial" data-dial-index="${i}">${n}</div>`
@@ -72,7 +90,5 @@ function update() {
     });
     
     const episodeNum = numbers[0] * 100 + numbers[1] * 10 + numbers[2];
-    document.getElementById('episode').innerHTML = episodes[episodeNum] || "";
+    document.getElementById('episode').innerHTML = episodes[episodeNum] || "Loading...";
 }
-
-update();
