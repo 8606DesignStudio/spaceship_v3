@@ -6,16 +6,26 @@ function parseCSV() {
     const csvPath = path.join(__dirname, '../data/export.csv');
     const csvContent = fs.readFileSync(csvPath, 'utf-8');
     
+    console.log('CSV Content preview:');
+    console.log(csvContent.split('\n').slice(0, 5).join('\n'));
+    
     // Split into lines and remove the header
     const lines = csvContent.split('\n').slice(1);
     
     const episodes = {};
     
-    lines.forEach(line => {
+    lines.forEach((line, index) => {
         if (!line.trim()) return; // Skip empty lines
         
         // Parse CSV line (handling quoted fields that may contain commas)
         const fields = parseCSVLine(line);
+        
+        console.log(`Line ${index + 1}: Found ${fields.length} fields`);
+        if (fields.length >= 3) {
+            console.log(`  Title: ${fields[0]}`);
+            console.log(`  Link: ${fields[1]}`);
+            console.log(`  Episode: ${fields[2]}`);
+        }
         
         if (fields.length >= 3) {
             const title = fields[0];
@@ -24,6 +34,9 @@ function parseCSV() {
             
             if (!isNaN(episodeNum)) {
                 episodes[episodeNum] = `<a href="${link}">${title}</a>`;
+                console.log(`Added episode ${episodeNum}`);
+            } else {
+                console.log(`Failed to parse episode number: ${fields[2]}`);
             }
         }
     });
@@ -68,8 +81,11 @@ function parseCSVLine(line) {
 function generateEpisodesArray() {
     const episodeData = parseCSV();
     
+    console.log('Episode data keys:', Object.keys(episodeData).sort((a, b) => parseInt(a) - parseInt(b)));
+    
     // Find the maximum episode number
     const maxEpisode = Math.max(...Object.keys(episodeData).map(Number));
+    console.log('Max episode:', maxEpisode);
     
     // Create array with proper size (maxEpisode + 1 to include index 0)
     const episodes = new Array(maxEpisode + 1).fill('');
@@ -108,6 +124,14 @@ export const episodes = ${JSON.stringify(episodes, null, 2)};
     console.log(`✅ Generated episodes data with ${episodes.length} entries`);
     console.log(`📁 Written to: ${outputPath}`);
     console.log(`🎯 Latest episode: #${episodes.length - 1}`);
+    
+    // Show the last few episodes for verification
+    console.log('\nLast 5 episodes:');
+    for (let i = Math.max(1, episodes.length - 5); i < episodes.length; i++) {
+        if (episodes[i]) {
+            console.log(`${i}: ${episodes[i]}`);
+        }
+    }
 }
 
 // Run the generation
