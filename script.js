@@ -115,9 +115,9 @@ function handleTouchEnd(e) {
 }
 
 function startMomentum(initialVelocity) {
-    let velocity = initialVelocity;
-    const friction = 0.95; // How quickly momentum decays (0.95 = 5% loss per frame)
-    const minVelocity = 0.05; // Stop when velocity gets too small
+    let velocity = initialVelocity * 5; // Amplify the initial velocity
+    const friction = 0.98; // Reduced friction for longer momentum (0.98 = 2% loss per frame)
+    const minVelocity = 0.02; // Lower threshold for longer spinning
     
     function animateMomentum() {
         // Apply friction
@@ -131,7 +131,7 @@ function startMomentum(initialVelocity) {
         }
         
         // Calculate episode change based on current velocity
-        const episodeChange = Math.floor(Math.abs(velocity * 16) / swipeSensitivity); // 16ms frame time
+        const episodeChange = Math.floor(Math.abs(velocity * 32) / swipeSensitivity); // Doubled the frame multiplier for faster changes
         
         if (episodeChange > 0) {
             if (velocity > 0) {
