@@ -58,7 +58,7 @@ function spinDown() {
 
 let touchStartY = 0;
 let touchStartX = 0;
-const swipeSensitivity = 5; // Pixels per episode change
+const swipeSensitivity = 8; // Pixels per episode change
 
 function handleTouchStart(e) {
     touchStartY = e.touches[0].clientY;
