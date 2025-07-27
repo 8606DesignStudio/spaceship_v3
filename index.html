@@ -29,6 +29,29 @@
 
     <!-- Link to external JavaScript file -->
     <script type="module" src="script.js"></script>
+    
+    <!-- Viewport height fix script -->
+    <script>
+        // Calculate the actual viewport height and set it as a CSS custom property
+        function setViewportHeight() {
+            // Get the actual inner height of the window (excluding browser UI)
+            const vh = window.innerHeight * 0.01;
+            // Set the --vh custom property on the document root
+            document.documentElement.style.setProperty('--vh', `${vh}px`);
+        }
+        
+        // Set the height on page load
+        setViewportHeight();
+        
+        // Update the height when the window is resized (including when browser UI appears/disappears)
+        window.addEventListener('resize', setViewportHeight);
+        
+        // Also update on orientation change for mobile devices
+        window.addEventListener('orientationchange', () => {
+            // Small delay to ensure the orientation change is complete
+            setTimeout(setViewportHeight, 100);
+        });
+    </script>
 </body>
 <!-- ========== HTML FILE ENDS HERE ========== -->
 </html>
