@@ -1,156 +1,155 @@
-// Episode data and current state
-let episodes = {};
-let currentEpisode = 0;
-
 // Load episodes data
+let episodes = {};
+
+// Dynamic import with Firefox compatibility
 async function loadEpisodes() {
     try {
         const module = await import('./data/generatedEpisodes.js?t=' + Math.random());
         episodes = module.episodes;
-        updateDisplay();
+        update();
     } catch (error) {
         console.error('Failed to load episodes:', error);
+        const fallbackModule = await import('./data/generatedEpisodes.js');
+        episodes = fallbackModule.episodes;
+        update();
     }
 }
 
-// Update the display with current episode
-function updateDisplay() {
-    const buttonElement = document.querySelector('.episode-button');
-    const episodeElement = document.getElementById('episode');
+let currentNumber = 0;
+
+// Initialize
+loadEpisodes();
+document.getElementById('dials').innerHTML = `<div class="dial" data-dial-index="0">${currentNumber}</div>`;
+
+// Touch/swipe variables
+let startX = 0;
+let startTime = 0;
+let isAnimating = false;
+
+// Get dial element and add event listeners
+const dialElement = document.querySelector('.dial');
+
+// Mouse events
+dialElement.addEventListener('mousedown', handleStart);
+document.addEventListener('mousemove', handleMove);
+document.addEventListener('mouseup', handleEnd);
+
+// Touch events
+dialElement.addEventListener('touchstart', handleStart, { passive: false });
+document.addEventListener('touchmove', handleMove, { passive: false });
+document.addEventListener('touchend', handleEnd);
+
+// Click fallback
+dialElement.addEventListener('click', handleClick);
+
+function handleStart(e) {
+    if (isAnimating) return;
     
-    if (buttonElement) {
-        buttonElement.textContent = currentEpisode;
+    e.preventDefault();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    startX = clientX;
+    startTime = Date.now();
+    dialElement.style.cursor = 'grabbing';
+}
+
+function handleMove(e) {
+    if (startX === 0 || isAnimating) return;
+    
+    e.preventDefault();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const deltaX = clientX - startX;
+    
+    // Visual feedback during drag
+    const rotation = deltaX * 0.5;
+    dialElement.style.transform = `rotate(${rotation}deg) scale(1.05)`;
+}
+
+function handleEnd(e) {
+    if (startX === 0 || isAnimating) return;
+    
+    const clientX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
+    const deltaX = clientX - startX;
+    const deltaTime = Date.now() - startTime;
+    const velocity = Math.abs(deltaX) / deltaTime;
+    
+    // Reset cursor
+    dialElement.style.cursor = 'grab';
+    
+    // Calculate steps based on distance and velocity
+    let steps = 0;
+    if (Math.abs(deltaX) > 20) { // Minimum swipe distance
+        steps = Math.round(Math.abs(deltaX) / 30); // Base steps on distance
+        if (velocity > 0.5) { // Add momentum for fast swipes
+            steps += Math.round(velocity * 5);
+        }
+        steps = Math.max(1, Math.min(steps, 20)); // Limit steps
+        
+        if (deltaX < 0) steps = -steps; // Negative for left swipe
     }
     
-    if (episodeElement && episodes.length > 0) {
-        episodeElement.innerHTML = episodes[currentEpisode] || "";
+    // Reset position
+    startX = 0;
+    
+    if (steps !== 0) {
+        animateSteps(steps);
+    } else {
+        // Reset transform if no movement
+        dialElement.style.transform = '';
     }
 }
 
-// Button interaction class
-class ButtonController {
-    constructor(element) {
-        this.element = element;
-        this.isDragging = false;
-        this.startX = 0;
-        this.startTime = 0;
-        this.isAnimating = false;
-        
-        this.bindEvents();
-    }
+function handleClick(e) {
+    if (isAnimating || startX !== 0) return;
     
-    bindEvents() {
-        // Mouse events
-        this.element.addEventListener('mousedown', this.handleStart.bind(this));
-        document.addEventListener('mousemove', this.handleMove.bind(this));
-        document.addEventListener('mouseup', this.handleEnd.bind(this));
-        
-        // Touch events
-        this.element.addEventListener('touchstart', this.handleStart.bind(this), { passive: false });
-        document.addEventListener('touchmove', this.handleMove.bind(this), { passive: false });
-        document.addEventListener('touchend', this.handleEnd.bind(this));
-        
-        // Click fallback
-        this.element.addEventListener('click', this.handleClick.bind(this));
-    }
+    // Simple click advances by 1
+    currentNumber = (currentNumber + 1) % 147;
+    update();
+}
+
+function animateSteps(steps) {
+    if (isAnimating) return;
     
-    handleStart(e) {
-        if (this.isAnimating) return;
-        
-        e.preventDefault();
-        this.isDragging = true;
-        this.startX = this.getClientX(e);
-        this.startTime = Date.now();
-        
-        this.element.style.transform = 'scale(0.95)';
-    }
+    isAnimating = true;
+    const totalSteps = Math.abs(steps);
+    const direction = steps > 0 ? 1 : -1;
+    let currentStep = 0;
     
-    handleMove(e) {
-        if (!this.isDragging || this.isAnimating) return;
-        e.preventDefault();
-    }
-    
-    handleEnd(e) {
-        if (!this.isDragging || this.isAnimating) return;
-        
-        const endX = this.getClientX(e);
-        const deltaX = endX - this.startX;
-        const deltaTime = Date.now() - this.startTime;
-        const velocity = Math.abs(deltaX) / deltaTime;
-        
-        this.isDragging = false;
-        this.element.style.transform = '';
-        
-        // Calculate movement based on swipe
-        const minSwipeDistance = 20;
-        if (Math.abs(deltaX) > minSwipeDistance) {
-            const direction = deltaX > 0 ? 1 : -1;
-            let steps = Math.round(Math.abs(deltaX) / 30);
-            
-            // Add momentum for fast swipes
-            if (velocity > 0.5) {
-                steps += Math.round(velocity * 5);
-            }
-            
-            steps = Math.max(1, Math.min(steps, 10));
-            this.animateMovement(direction * steps);
+    function animateStep() {
+        if (currentStep >= totalSteps) {
+            isAnimating = false;
+            dialElement.style.transform = '';
+            return;
         }
         
-        this.startX = 0;
+        // Update episode number
+        currentNumber = (currentNumber + direction + 147) % 147;
+        update();
+        
+        // Visual animation
+        const progress = currentStep / totalSteps;
+        const easing = 1 - Math.pow(1 - progress, 3); // Ease out cubic
+        const rotation = (1 - easing) * direction * 180;
+        const scale = 1 + (1 - easing) * 0.1;
+        
+        dialElement.style.transform = `rotate(${rotation}deg) scale(${scale})`;
+        
+        currentStep++;
+        
+        // Slow down over time
+        const delay = 50 + (currentStep * 20);
+        setTimeout(animateStep, delay);
     }
     
-    handleClick(e) {
-        if (this.isDragging || this.isAnimating || this.startX !== 0) return;
-        this.changeEpisode(1);
-    }
-    
-    animateMovement(steps) {
-        if (this.isAnimating) return;
-        
-        this.isAnimating = true;
-        const totalSteps = Math.abs(steps);
-        const direction = steps > 0 ? 1 : -1;
-        let currentStep = 0;
-        
-        const animate = () => {
-            if (currentStep >= totalSteps) {
-                this.isAnimating = false;
-                return;
-            }
-            
-            this.changeEpisode(direction);
-            currentStep++;
-            
-            const delay = 80 + (currentStep * 20);
-            setTimeout(animate, delay);
-        };
-        
-        animate();
-    }
-    
-    changeEpisode(direction) {
-        const maxEpisode = episodes.length - 1;
-        currentEpisode = (currentEpisode + direction + episodes.length) % episodes.length;
-        
-        if (currentEpisode === 0 && direction === -1) {
-            currentEpisode = maxEpisode;
-        }
-        
-        updateDisplay();
-    }
-    
-    getClientX(e) {
-        return e.touches ? e.touches[0].clientX : e.clientX;
-    }
+    animateStep();
 }
 
-// Initialize when DOM is loaded
-document.addEventListener('DOMContentLoaded', () => {
-    const buttonContainer = document.getElementById('dials');
-    buttonContainer.innerHTML = '<div class="episode-button">0</div>';
+function update() {
+    const dialElement = document.querySelector('.dial');
+    dialElement.textContent = currentNumber;
     
-    const buttonElement = document.querySelector('.episode-button');
-    new ButtonController(buttonElement);
-    
-    loadEpisodes();
-});
+    if (episodes.length === 0) {
+        document.getElementById('episode').innerHTML = "";
+    } else {
+        document.getElementById('episode').innerHTML = episodes[currentNumber] || "";
+    }
+}
