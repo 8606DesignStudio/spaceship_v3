@@ -1,4 +1,5 @@
 // Load episodes data with Firefox-compatible cache busting
+// Episode data loading and initialization
 let episodes = {};
 
 async function loadEpisodes() {
@@ -14,15 +15,18 @@ async function loadEpisodes() {
     }
 }
 
+// Dial state and setup
 let currentNumber = 0;
 const maxEpisode = 146;
 
 loadEpisodes();
 
+// Create dial element
 document.getElementById('dials').innerHTML = `<div class="dial">${String(currentNumber).padStart(3, '0')}</div>`;
 
 const dialElement = document.querySelector('.dial');
 
+// Create invisible touch area for better mobile interaction
 const touchArea = document.createElement('div');
 touchArea.style.position = 'absolute';
 touchArea.style.width = '225px';
@@ -34,21 +38,25 @@ touchArea.style.zIndex = '10';
 
 document.getElementById('dials').appendChild(touchArea);
 
+// Event listeners
 dialElement.addEventListener('click', () => spin());
 touchArea.addEventListener('touchstart', (e) => handleTouchStart(e));
 touchArea.addEventListener('touchmove', (e) => handleTouchMove(e));
 touchArea.addEventListener('touchend', handleTouchEnd);
 
+// Click handler for desktop
 function spin() {
     currentNumber = (currentNumber + 1) % (maxEpisode + 1);
     updateDialOnly();
     updateEpisodeContent();
 }
 
+// Touch handling variables
 let touchStartY = 0;
 let touchStartX = 0;
 const swipeSensitivity = 8;
 
+// Touch event handlers
 function handleTouchStart(e) {
     touchStartY = e.touches[0].clientY;
     touchStartX = e.touches[0].clientX;
@@ -81,6 +89,7 @@ function handleTouchEnd(e) {
     e.preventDefault();
 }
 
+// Update functions
 function updateDialOnly() {
     const dialElement = document.querySelector('.dial');
     dialElement.textContent = String(currentNumber).padStart(3, '0');
