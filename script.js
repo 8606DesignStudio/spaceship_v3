@@ -40,24 +40,32 @@ function spinDown() {
 }
 
 let touchStartY = 0;
+let touchStartX = 0;
 
 function handleTouchStart(e) {
     touchStartY = e.touches[0].clientY;
+    touchStartX = e.touches[0].clientX;
     e.preventDefault();
 }
 
 function handleTouchEnd(e) {
     const touchEndY = e.changedTouches[0].clientY;
+    const touchEndX = e.changedTouches[0].clientX;
     const deltaY = touchStartY - touchEndY;
+    const deltaX = touchStartX - touchEndX;
     const threshold = 30;
     
-    if (Math.abs(deltaY) > threshold) {
-        if (deltaY > 0) {
+    // Check if horizontal swipe is more significant than vertical
+    if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > threshold) {
+        if (deltaX > 0) {
+            // Swiped left (forward)
             spin();
         } else {
+            // Swiped right (backward)
             spinDown();
         }
     } else {
+        // Default to forward if no clear swipe direction
         spin();
     }
     e.preventDefault();
