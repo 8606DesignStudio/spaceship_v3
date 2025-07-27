@@ -128,61 +128,6 @@ body {
         0 0 0 1px rgba(255, 255, 255, 0.2);
 }
 
-/* Full-screen button styling */
-.fullscreen-button {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    z-index: 1000;
-}
-
-.fullscreen-btn {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    padding: 8px 16px;
-    background: linear-gradient(135deg, #9b59b6, #8e44ad); /* Purple gradient to match scraper link */
-    color: white;
-    border: none;
-    border-radius: 6px;
-    font-family: 'Quicksand', sans-serif;
-    font-size: 0.9rem;
-    font-weight: 600;
-    cursor: pointer;
-    transition: all 0.3s ease;
-    box-shadow: 
-        0 2px 8px rgba(155, 89, 182, 0.3),
-        0 0 0 1px rgba(255, 255, 255, 0.1);
-}
-
-.fullscreen-btn:hover {
-    background: linear-gradient(135deg, #a569bd, #9b59b6);
-    transform: translateY(-1px);
-    box-shadow: 
-        0 4px 12px rgba(155, 89, 182, 0.4),
-        0 0 0 1px rgba(255, 255, 255, 0.2);
-}
-
-.fullscreen-icon {
-    font-size: 1.1rem;
-    line-height: 1;
-}
-
-.fullscreen-text {
-    font-size: 0.9rem;
-}
-
-/* Hide text on smaller screens to save space */
-@media (max-width: 480px) {
-    .fullscreen-text {
-        display: none;
-    }
-    
-    .fullscreen-btn {
-        padding: 8px 12px;
-    }
-}
-
 /* Container for the three dials */
 .dials {
     position: absolute;
