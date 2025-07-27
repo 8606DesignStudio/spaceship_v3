@@ -17,14 +17,12 @@ function parseCSV() {
         // Parse CSV line (handling quoted fields that may contain commas)
         const fields = parseCSVLine(line);
         
-        if (fields.length >= 2) {
+        if (fields.length >= 3) {
             const title = fields[0];
             const link = fields[1];
+            const episodeNum = parseInt(fields[2]);
             
-            // Extract episode number from title using regex
-            const episodeMatch = title.match(/#(\d+)/);
-            if (episodeMatch) {
-                const episodeNum = parseInt(episodeMatch[1]);
+            if (!isNaN(episodeNum)) {
                 episodes[episodeNum] = `<a href="${link}">${title}</a>`;
             }
         }
