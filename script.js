@@ -70,32 +70,67 @@ function handleEnd(e) {
     const clientX = e.changedTouches ? e.changedTouches[0].clientX : e.clientX;
     const deltaX = clientX - startX;
     const deltaTime = Date.now() - startTime;
-    const velocity = Math.abs(deltaX) / deltaTime;
     
-    // Reset cursor
+    // Calculate velocity (pixels per millisecond)
+    const velocity = deltaX / Math.max(deltaTime, 1);
+    const speed = Math.abs(velocity);
+    
+    // Reset cursor and transform
     dialElement.style.cursor = 'grab';
-    
-    // Calculate steps based on distance and velocity
-    let steps = 0;
-    if (Math.abs(deltaX) > 20) { // Minimum swipe distance
-        steps = Math.round(Math.abs(deltaX) / 30); // Base steps on distance
-        if (velocity > 0.5) { // Add momentum for fast swipes
-            steps += Math.round(velocity * 5);
-        }
-        steps = Math.max(1, Math.min(steps, 20)); // Limit steps
-        
-        if (deltaX < 0) steps = -steps; // Negative for left swipe
-    }
+    dialElement.style.transform = '';
     
     // Reset position
     startX = 0;
     
-    if (steps !== 0) {
-        animateSteps(steps);
-    } else {
-        // Reset transform if no movement
-        dialElement.style.transform = '';
+    // Apply inertia if there's sufficient velocity or distance
+    if (speed > 0.1 || Math.abs(deltaX) > 15) {
+        applyInertia(velocity);
     }
+}
+
+function applyInertia(initialVelocity) {
+    if (isAnimating) return;
+    
+    isAnimating = true;
+    let velocity = initialVelocity;
+    const friction = 0.92; // Friction coefficient (0-1, lower = more friction)
+    const minVelocity = 0.05; // Minimum velocity before stopping
+    const pixelsPerStep = 25; // How many pixels equal one episode step
+    
+    function inertiaStep() {
+        // Apply friction
+        velocity *= friction;
+        
+        // Check if we should stop
+        if (Math.abs(velocity) < minVelocity) {
+            isAnimating = false;
+            dialElement.style.transform = '';
+            return;
+        }
+        
+        // Calculate if we should advance an episode
+        const movement = velocity * 16; // 16ms frame time approximation
+        
+        if (Math.abs(movement) >= pixelsPerStep) {
+            // Advance episode
+            const direction = movement > 0 ? 1 : -1;
+            currentNumber = (currentNumber + direction + 147) % 147;
+            update();
+            
+            // Reduce velocity after each step
+            velocity *= 0.8;
+            
+            // Visual feedback
+            const rotation = velocity * 2;
+            const scale = 1 + Math.abs(velocity) * 0.1;
+            dialElement.style.transform = `rotate(${rotation}deg) scale(${scale})`;
+        }
+        
+        // Continue animation
+        requestAnimationFrame(inertiaStep);
+    }
+    
+    inertiaStep();
 }
 
 function handleClick(e) {
