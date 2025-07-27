@@ -1,17 +1,21 @@
 // Load episodes data with Firefox-compatible cache busting
 let episodes = {};
 
+// Use float for smooth momentum calculations
+let currentNumberFloat = 0;
 // Dynamic import with Firefox compatibility
 async function loadEpisodes() {
     try {
         const module = await import('./data/generatedEpisodes.js?t=' + Math.random());
         episodes = module.episodes;
+        currentNumberFloat = currentNumber;
         update(); // Update display after episodes are loaded
     } catch (error) {
         console.error('Failed to load episodes:', error);
         // Fallback to static import
         const fallbackModule = await import('./data/generatedEpisodes.js');
         episodes = fallbackModule.episodes;
+        currentNumberFloat = currentNumber;
         update();
     }
 }
@@ -47,12 +51,14 @@ touchArea.addEventListener('touchmove', (e) => handleTouchMove(e));
 touchArea.addEventListener('touchend', handleTouchEnd);
 
 function spin() {
-    currentNumber = (currentNumber + 1) % (maxEpisode + 1);
+    currentNumberFloat = (currentNumberFloat + 1) % (maxEpisode + 1);
+    currentNumber = Math.floor(currentNumberFloat);
     update();
 }
 
 function spinDown() {
-    currentNumber = (currentNumber - 1 + maxEpisode + 1) % (maxEpisode + 1);
+    currentNumberFloat = (currentNumberFloat - 1 + maxEpisode + 1) % (maxEpisode + 1);
+    currentNumber = Math.floor(currentNumberFloat);
     update();
 }
 
@@ -60,7 +66,7 @@ let touchStartY = 0;
 let touchStartX = 0;
 let lastTouchX = 0;
 let lastTouchTime = 0;
-let baseEpisodeNumber = 0;
+let initialTouchNumberFloat = 0;
 const swipeSensitivity = 30; // Pixels per episode change
 let momentumAnimation = null;
 
@@ -69,7 +75,7 @@ function handleTouchStart(e) {
     touchStartX = e.touches[0].clientX;
     lastTouchX = touchStartX;
     lastTouchTime = Date.now();
-    baseEpisodeNumber = currentNumber;
+    initialTouchNumberFloat = currentNumberFloat;
     
     // Stop any existing momentum
     if (momentumAnimation) {
@@ -83,24 +89,22 @@ function handleTouchStart(e) {
 function handleTouchMove(e) {
     const currentTouchX = e.touches[0].clientX;
     const currentTime = Date.now();
-    const deltaX = currentTouchX - touchStartX;
+    const totalDeltaX = currentTouchX - touchStartX;
     
-    // Calculate episode change based on swipe distance
-    const episodeChange = Math.floor(Math.abs(deltaX) / swipeSensitivity);
-    
-    if (Math.abs(deltaX) > 10) { // Only start changing after 10px to avoid jitter
-        let newEpisodeNumber;
+    // Update currentNumberFloat based on total swipe distance
+    if (Math.abs(totalDeltaX) > 10) { // Only start changing after 10px to avoid jitter
+        const episodeChange = totalDeltaX / swipeSensitivity;
+        currentNumberFloat = initialTouchNumberFloat + episodeChange;
         
-        if (deltaX > 0) {
-            // Swiping right - increase episode number
-            newEpisodeNumber = (baseEpisodeNumber + episodeChange) % (maxEpisode + 1);
-        } else {
-            // Swiping left - decrease episode number
-            newEpisodeNumber = (baseEpisodeNumber - episodeChange + maxEpisode + 1) % (maxEpisode + 1);
+        // Handle wrapping
+        while (currentNumberFloat < 0) {
+            currentNumberFloat += (maxEpisode + 1);
+        }
+        while (currentNumberFloat >= (maxEpisode + 1)) {
+            currentNumberFloat -= (maxEpisode + 1);
         }
         
-        // Update the dial display in real-time
-        currentNumber = newEpisodeNumber;
+        currentNumber = Math.floor(currentNumberFloat);
         updateDialOnly();
     }
     
@@ -120,10 +124,11 @@ function handleTouchEnd(e) {
     const velocity = timeDelta > 0 ? distanceDelta / timeDelta : 0;
     
     // Start momentum animation if velocity is significant
-    if (Math.abs(velocity) > 0.1) { // Minimum velocity threshold
+    if (Math.abs(velocity) > 0.05) { // Minimum velocity threshold
         startMomentum(velocity);
     } else {
         // Just update content if no momentum
+        currentNumber = Math.floor(currentNumberFloat);
         updateEpisodeContent();
     }
     
@@ -132,8 +137,8 @@ function handleTouchEnd(e) {
 
 function startMomentum(initialVelocity) {
     let velocity = initialVelocity;
-    const friction = 0.99; // How quickly momentum decays (0.95 = 5% loss per frame)
-    const minVelocity = 0.05; // Stop when velocity gets too small
+    const friction = 0.99; // How quickly momentum decays
+    const minVelocity = 0.01; // Stop when velocity gets too small
     
     function animateMomentum() {
         // Apply friction
@@ -142,23 +147,25 @@ function startMomentum(initialVelocity) {
         // Stop if velocity is too small
         if (Math.abs(velocity) < minVelocity) {
             momentumAnimation = null;
+            currentNumber = Math.floor(currentNumberFloat);
             updateEpisodeContent();
             return;
         }
         
-        // Calculate episode change based on current velocity
-        const episodeChange = Math.floor(Math.abs(velocity * 16) / swipeSensitivity); // 16ms frame time
+        // Update currentNumberFloat based on velocity
+        const episodeChange = (velocity * 16) / swipeSensitivity; // 16ms frame time
+        currentNumberFloat += episodeChange;
         
-        if (episodeChange > 0) {
-            if (velocity > 0) {
-                // Moving right - increase episode number
-                currentNumber = (currentNumber + episodeChange) % (maxEpisode + 1);
-            } else {
-                // Moving left - decrease episode number
-                currentNumber = (currentNumber - episodeChange + maxEpisode + 1) % (maxEpisode + 1);
-            }
-            updateDialOnly();
+        // Handle wrapping
+        while (currentNumberFloat < 0) {
+            currentNumberFloat += (maxEpisode + 1);
         }
+        while (currentNumberFloat >= (maxEpisode + 1)) {
+            currentNumberFloat -= (maxEpisode + 1);
+        }
+        
+        currentNumber = Math.floor(currentNumberFloat);
+        updateDialOnly();
         
         // Continue animation
         momentumAnimation = requestAnimationFrame(animateMomentum);
