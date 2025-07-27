@@ -149,13 +149,12 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: grab;
-    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    cursor: pointer;
+    transition: transform 0.2s ease;
     font-size: 1.5rem;
     font-weight: bold;
     color: #8b4513;
     user-select: none;
-    touch-action: none;
 }
 
 .dial:hover { 
