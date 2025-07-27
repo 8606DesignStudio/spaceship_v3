@@ -25,10 +25,26 @@ loadEpisodes();
 document.getElementById('dials').innerHTML = `<div class="dial">${String(currentNumber).padStart(3, '0')}</div>`;
 
 const dialElement = document.querySelector('.dial');
+
+// Create a larger invisible touch area
+const touchArea = document.createElement('div');
+touchArea.style.position = 'absolute';
+touchArea.style.width = '225px'; // 3x the dial width (75px * 3)
+touchArea.style.height = '150px'; // 3x the dial height (50px * 3)
+touchArea.style.left = '50%';
+touchArea.style.top = '50%';
+touchArea.style.transform = 'translate(-50%, -50%)';
+touchArea.style.zIndex = '10';
+// touchArea.style.backgroundColor = 'rgba(255, 0, 0, 0.2)'; // Uncomment to visualize the touch area
+
+// Add the touch area to the dials container
+document.getElementById('dials').appendChild(touchArea);
+
+// Add event listeners to both the dial (for clicks) and touch area (for swipes)
 dialElement.addEventListener('click', () => spin());
-dialElement.addEventListener('touchstart', (e) => handleTouchStart(e));
-dialElement.addEventListener('touchmove', (e) => handleTouchMove(e));
-dialElement.addEventListener('touchend', handleTouchEnd);
+touchArea.addEventListener('touchstart', (e) => handleTouchStart(e));
+touchArea.addEventListener('touchmove', (e) => handleTouchMove(e));
+touchArea.addEventListener('touchend', handleTouchEnd);
 
 function spin() {
     currentNumber = (currentNumber + 1) % (maxEpisode + 1);
