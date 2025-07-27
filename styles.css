@@ -76,7 +76,7 @@ body {
 
 .stripe-button {
     position: fixed;
-    bottom: calc(50vh - 25vh + 20px);
+    bottom: 20px;
     left: calc(50vw - 50vh * 0.75 + 20px);
     z-index: 1000;
 }
@@ -89,10 +89,17 @@ body {
     }
 }
 
-/* Adjust button position for very wide screens */
+/* Adjust button position for wide screens where image is constrained by height */
+@media (min-width: 768px) {
+    .stripe-button {
+        left: calc(50vw - 50vh * 0.75 + 20px);
+    }
+}
+
+/* For very wide screens where the image width is constrained */
 @media (min-width: 768px) and (min-aspect-ratio: 4/3) {
     .stripe-button {
-        left: calc(50vw - 33.33vw + 20px);
+        left: calc(50vw - 25vw + 20px);
     }
 }
 
