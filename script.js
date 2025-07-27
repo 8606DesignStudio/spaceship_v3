@@ -42,7 +42,6 @@ document.getElementById('dials').appendChild(touchArea);
 dialElement.addEventListener('click', () => spin());
 touchArea.addEventListener('touchstart', (e) => handleTouchStart(e));
 touchArea.addEventListener('touchmove', (e) => handleTouchMove(e));
-touchArea.addEventListener('touchend', handleTouchEnd);
 
 // Click handler for desktop
 function spin() {
@@ -82,10 +81,6 @@ function handleTouchMove(e) {
         }
     }
     
-    e.preventDefault();
-}
-
-function handleTouchEnd(e) {
     e.preventDefault();
 }
 
