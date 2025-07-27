@@ -43,19 +43,30 @@ function spinDown() {
 let touchStartY = 0;
 let touchStartX = 0;
 let lastTouchX = 0;
+let lastTouchTime = 0;
 let baseEpisodeNumber = 0;
 const swipeSensitivity = 30; // Pixels per episode change
+let momentumAnimation = null;
 
 function handleTouchStart(e) {
     touchStartY = e.touches[0].clientY;
     touchStartX = e.touches[0].clientX;
     lastTouchX = touchStartX;
+    lastTouchTime = Date.now();
     baseEpisodeNumber = currentNumber;
+    
+    // Stop any existing momentum
+    if (momentumAnimation) {
+        cancelAnimationFrame(momentumAnimation);
+        momentumAnimation = null;
+    }
+    
     e.preventDefault();
 }
 
 function handleTouchMove(e) {
     const currentTouchX = e.touches[0].clientX;
+    const currentTime = Date.now();
     const deltaX = currentTouchX - touchStartX;
     
     // Calculate episode change based on swipe distance
@@ -78,11 +89,73 @@ function handleTouchMove(e) {
     }
     
     lastTouchX = currentTouchX;
+    lastTouchTime = currentTime;
     e.preventDefault();
 }
 
 function handleTouchEnd(e) {
-    // Update the episode content to match the current dial number
+    // Calculate velocity for momentum
+    const currentTime = Date.now();
+    const timeDelta = currentTime - lastTouchTime;
+    const finalTouchX = e.changedTouches[0].clientX;
+    const distanceDelta = finalTouchX - lastTouchX;
+    
+    // Calculate velocity (pixels per millisecond)
+    const velocity = timeDelta > 0 ? distanceDelta / timeDelta : 0;
+    
+    // Start momentum animation if velocity is significant
+    if (Math.abs(velocity) > 0.1) { // Minimum velocity threshold
+        startMomentum(velocity);
+    } else {
+        // Just update content if no momentum
+        updateEpisodeContent();
+    }
+    
+    e.preventDefault();
+}
+
+function startMomentum(initialVelocity) {
+    let velocity = initialVelocity;
+    const friction = 0.95; // How quickly momentum decays (0.95 = 5% loss per frame)
+    const minVelocity = 0.05; // Stop when velocity gets too small
+    
+    function animateMomentum() {
+        // Apply friction
+        velocity *= friction;
+        
+        // Stop if velocity is too small
+        if (Math.abs(velocity) < minVelocity) {
+            momentumAnimation = null;
+            updateEpisodeContent();
+            return;
+        }
+        
+        // Calculate episode change based on current velocity
+        const episodeChange = Math.floor(Math.abs(velocity * 16) / swipeSensitivity); // 16ms frame time
+        
+        if (episodeChange > 0) {
+            if (velocity > 0) {
+                // Moving right - increase episode number
+                currentNumber = (currentNumber + episodeChange) % (maxEpisode + 1);
+            } else {
+                // Moving left - decrease episode number
+                currentNumber = (currentNumber - episodeChange + maxEpisode + 1) % (maxEpisode + 1);
+            }
+            updateDialOnly();
+        }
+        
+        // Continue animation
+        momentumAnimation = requestAnimationFrame(animateMomentum);
+    }
+    
+    momentumAnimation = requestAnimationFrame(animateMomentum);
+}
+
+function stopMomentum() {
+    if (momentumAnimation) {
+        cancelAnimationFrame(momentumAnimation);
+        momentumAnimation = null;
+    }
     updateEpisodeContent();
     e.preventDefault();
 }
