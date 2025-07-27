@@ -81,7 +81,7 @@ function handleTouchMove(e) {
                 currentNumber += (maxEpisode + 1);
             }
             touchStartX = currentTouchX; // Reset start position
-            updateDialOnly();
+            update(); // Update both dial and episode content in real-time
         }
     }
     
@@ -89,7 +89,7 @@ function handleTouchMove(e) {
 }
 
 function handleTouchEnd(e) {
-    updateEpisodeContent();
+    // Episode content is already updated in real-time, no need to update again
     e.preventDefault();
 }
 
