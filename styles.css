@@ -1,35 +1,30 @@
 /* ========== CSS FILE (styles.css) ========== */
 /* This file contains ALL the styling and appearance rules */
 
-/* Reset default browser styles and set up box-sizing */
 * { 
     margin: 0; 
     padding: 0; 
     box-sizing: border-box; 
 }
 
-/* Main body styling - creates the dark blue background and centers everything */
 body {
     font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     height: 100vh;
-    min-height: 100vh;
     display: flex;
     align-items: center;
     justify-content: center;
-    background: #000050 url('public/cockpit.jpg') center/cover no-repeat; /* Cockpit background with dark blue fallback */
+    background: #000050 url('public/cockpit.jpg') center/cover no-repeat;
     background-attachment: fixed;
     color: white;
     flex-direction: column;
     position: relative;
     overflow: hidden;
-    /* Prevent layout shifts from viewport changes */
     position: fixed;
     top: 0;
     left: 0;
     width: 100vw;
 }
 
-/* Episode title display area */
 .episode {
     position: absolute;
     top: 20%;
@@ -39,7 +34,7 @@ body {
     max-width: 600px;
     font-family: 'Quicksand', sans-serif;
     font-size: 1.2rem;
-    color: #4bb8e9; /* Light blue text color for episode titles */
+    color: #4bb8e9;
     text-align: center;
     min-height: 60px;
     display: flex;
@@ -47,31 +42,28 @@ body {
     justify-content: center;
     padding: 15px;
     text-shadow: 
-        0 0 5px rgba(138, 43, 226, 0.9), /* Inner glow - deep purple */
-        0 0 10px rgba(147, 112, 219, 0.8), /* Medium glow - medium slate blue */
-        0 0 15px rgba(123, 104, 238, 0.7), /* Outer glow - medium slate blue */
-        0 0 25px rgba(106, 90, 205, 0.5), /* Far glow - slate blue */
-        0 0 35px rgba(72, 61, 139, 0.3); /* Furthest glow - dark slate blue */
+        0 0 5px rgba(138, 43, 226, 0.9),
+        0 0 10px rgba(147, 112, 219, 0.8),
+        0 0 15px rgba(123, 104, 238, 0.7),
+        0 0 25px rgba(106, 90, 205, 0.5),
+        0 0 35px rgba(72, 61, 139, 0.3);
 }
 
-/* Episode link styling */
 .episode a {
-    color: #4bb8e9; /* Light blue color for episode links */
+    color: #4bb8e9;
     text-decoration: none;
     transition: color 0.2s;
 }
 
-/* Episode link hover effect */
 .episode a:hover {
-    color: #87ceeb; /* Lighter blue on hover - sky blue */
+    color: #87ceeb;
     text-decoration: underline;
     text-shadow: 
-        0 0 8px rgba(138, 43, 226, 0.9), /* Inner hover glow - deep purple */
-        0 0 15px rgba(147, 112, 219, 0.8), /* Medium hover glow - medium slate blue */
-        0 0 25px rgba(123, 104, 238, 0.6); /* Outer hover glow - medium slate blue */
+        0 0 8px rgba(138, 43, 226, 0.9),
+        0 0 15px rgba(147, 112, 219, 0.8),
+        0 0 25px rgba(123, 104, 238, 0.6);
 }
 
-/* Stripe button styling */
 .stripe-button {
     position: absolute;
     bottom: 20px;
@@ -82,7 +74,7 @@ body {
 .stripe-button a {
     display: inline-block;
     padding: 8px 16px;
-    background: linear-gradient(135deg, #4bb8e9, #87ceeb); /* Light blue gradient to match episode titles */
+    background: linear-gradient(135deg, #4bb8e9, #87ceeb);
     color: white;
     text-decoration: none;
     border-radius: 6px;
@@ -91,22 +83,22 @@ body {
     font-weight: 600;
     transition: all 0.3s ease;
     box-shadow: 
-        0 2px 8px rgba(75, 184, 233, 0.3), /* Light blue shadow to match */
+        0 2px 8px rgba(75, 184, 233, 0.3),
         0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
 .stripe-button a:hover {
-    background: linear-gradient(135deg, #87ceeb, #add8e6); /* Lighter blue hover effect */
+    background: linear-gradient(135deg, #87ceeb, #add8e6);
     transform: translateY(-1px);
     box-shadow: 
-        0 4px 12px rgba(75, 184, 233, 0.4), /* Enhanced light blue shadow on hover */
+        0 4px 12px rgba(75, 184, 233, 0.4),
         0 0 0 1px rgba(255, 255, 255, 0.2);
 }
 
 .stripe-button .scraper-link {
     display: inline-block;
     padding: 8px 16px;
-    background: linear-gradient(135deg, #9b59b6, #8e44ad); /* Purple gradient */
+    background: linear-gradient(135deg, #9b59b6, #8e44ad);
     color: white;
     text-decoration: none;
     border-radius: 6px;
@@ -116,19 +108,18 @@ body {
     transition: all 0.3s ease;
     margin-left: 10px;
     box-shadow: 
-        0 2px 8px rgba(155, 89, 182, 0.3), /* Purple shadow */
+        0 2px 8px rgba(155, 89, 182, 0.3),
         0 0 0 1px rgba(255, 255, 255, 0.1);
 }
 
 .stripe-button .scraper-link:hover {
-    background: linear-gradient(135deg, #a569bd, #9b59b6); /* Lighter purple hover */
+    background: linear-gradient(135deg, #a569bd, #9b59b6);
     transform: translateY(-1px);
     box-shadow: 
-        0 4px 12px rgba(155, 89, 182, 0.4), /* Enhanced purple shadow on hover */
+        0 4px 12px rgba(155, 89, 182, 0.4),
         0 0 0 1px rgba(255, 255, 255, 0.2);
 }
 
-/* Container for the three dials */
 .dials {
     position: absolute;
     top: 45%;
@@ -138,25 +129,23 @@ body {
     gap: 5px;
 }
 
-/* Individual dial styling */
 .dial {
-    width: 25px; /* Fixed width for each dial */
+    width: 25px;
     height: 50px;
     border-radius: 5px;
-    background: linear-gradient(135deg, #ffd700, #ffb347); /* Gold gradient */
-    border: 4px solid #b8860b; /* Darker gold border */
-    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3); /* Glowing effect */
+    background: linear-gradient(135deg, #ffd700, #ffb347);
+    border: 4px solid #b8860b;
+    box-shadow: 0 0 20px rgba(255, 215, 0, 0.3);
     display: flex;
     align-items: center;
     justify-content: center;
-    cursor: pointer; /* Show it's clickable */
-    transition: transform 0.2s; /* Smooth scaling animation */
+    cursor: pointer;
+    transition: transform 0.2s;
     font-size: 2rem;
     font-weight: bold;
-    color: #8b4513; /* Dark brown text */
+    color: #8b4513;
 }
 
-/* Dial hover effect - slightly larger */
 .dial:hover { 
     transform: scale(1.05); 
 }
