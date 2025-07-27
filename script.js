@@ -16,41 +16,54 @@ async function loadEpisodes() {
     }
 }
 
-let currentNumber = 0;
+let numbers = [0, 0, 0];
 
 // Initialize episodes loading
 loadEpisodes();
 
-document.getElementById('dials').innerHTML = `<div class="dial" data-dial-index="0">${currentNumber}</div>`;
+document.getElementById('dials').innerHTML = numbers.map((n, i) => 
+    `<div class="dial" data-dial-index="${i}">${n}</div>`
+).join('');
 
-const dialElement = document.querySelector('.dial');
-dialElement.addEventListener('click', () => spin());
-dialElement.addEventListener('touchstart', (e) => handleTouchStart(e));
-dialElement.addEventListener('touchend', handleTouchEnd);
+const dialElements = document.querySelectorAll('.dial');
+dialElements.forEach((dial, i) => {
+    dial.addEventListener('click', () => spin(i));
+    dial.addEventListener('touchstart', (e) => handleTouchStart(e, i));
+    dial.addEventListener('touchend', handleTouchEnd);
+});
 
-function spin() {
-    currentNumber = (currentNumber + 1) % 147; // 0-146 episodes
+function spin(i) {
+    numbers[i] = (numbers[i] + 1) % 10;
+    
+    if (numbers[i] === 0 && i > 0) {
+        spin(i - 1);
+    }
     
     update();
 }
 
-function spinDown() {
-    currentNumber = (currentNumber - 1 + 147) % 147; // 0-146 episodes
+function spinDown(i) {
+    const oldValue = numbers[i];
+    numbers[i] = (numbers[i] - 1 + 10) % 10;
+    
+    if (oldValue === 0 && i > 0) {
+        spinDown(i - 1);
+    }
     
     update();
 }
 
 let touchStartY = 0;
-let touchActive = false;
+let currentDial = -1;
 
-function handleTouchStart(e) {
+function handleTouchStart(e, dialIndex) {
     touchStartY = e.touches[0].clientY;
-    touchActive = true;
+    currentDial = dialIndex;
     e.preventDefault();
 }
 
 function handleTouchEnd(e) {
-    if (!touchActive) return;
+    if (currentDial === -1) return;
     
     const touchEndY = e.changedTouches[0].clientY;
     const deltaY = touchStartY - touchEndY;
@@ -58,23 +71,25 @@ function handleTouchEnd(e) {
     
     if (Math.abs(deltaY) > threshold) {
         if (deltaY > 0) {
-            spin();
+            spin(currentDial);
         } else {
-            spinDown();
+            spinDown(currentDial);
         }
     } else {
-        spin();
+        spin(currentDial);
     }
     
-    touchActive = false;
+    currentDial = -1;
     e.preventDefault();
 }
 
 function update() {
-    const dialElement = document.querySelector('.dial');
-    dialElement.textContent = currentNumber;
+    const dialElements = document.querySelectorAll('.dial');
+    dialElements.forEach((dial, i) => {
+        dial.textContent = numbers[i];
+    });
     
-    const episodeNum = currentNumber;
+    const episodeNum = numbers[0] * 100 + numbers[1] * 10 + numbers[2];
     
     // Only show "Loading..." if episodes haven't been loaded yet
     // Otherwise show the episode or empty string for non-existent episodes
