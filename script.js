@@ -15,11 +15,11 @@ async function loadEpisodes() {
 
 // Update the display with current episode
 function updateDisplay() {
-    const dialElement = document.querySelector('.dial');
+    const buttonElement = document.querySelector('.episode-button');
     const episodeElement = document.getElementById('episode');
     
-    if (dialElement) {
-        dialElement.textContent = currentEpisode;
+    if (buttonElement) {
+        buttonElement.textContent = currentEpisode;
     }
     
     if (episodeElement && episodes.length > 0) {
@@ -27,8 +27,8 @@ function updateDisplay() {
     }
 }
 
-// Dial interaction class
-class DialController {
+// Button interaction class
+class ButtonController {
     constructor(element) {
         this.element = element;
         this.isDragging = false;
@@ -62,20 +62,12 @@ class DialController {
         this.startX = this.getClientX(e);
         this.startTime = Date.now();
         
-        this.element.style.cursor = 'grabbing';
-        this.element.style.transform = 'scale(1.05)';
+        this.element.style.transform = 'scale(0.95)';
     }
     
     handleMove(e) {
         if (!this.isDragging || this.isAnimating) return;
-        
         e.preventDefault();
-        const currentX = this.getClientX(e);
-        const deltaX = currentX - this.startX;
-        
-        // Visual feedback during drag
-        const rotation = deltaX * 0.3;
-        this.element.style.transform = `scale(1.05) rotate(${rotation}deg)`;
     }
     
     handleEnd(e) {
@@ -87,24 +79,21 @@ class DialController {
         const velocity = Math.abs(deltaX) / deltaTime;
         
         this.isDragging = false;
-        this.element.style.cursor = 'grab';
+        this.element.style.transform = '';
         
         // Calculate movement based on swipe
-        const minSwipeDistance = 15;
+        const minSwipeDistance = 20;
         if (Math.abs(deltaX) > minSwipeDistance) {
             const direction = deltaX > 0 ? 1 : -1;
-            let steps = Math.floor(Math.abs(deltaX) / 25);
+            let steps = Math.round(Math.abs(deltaX) / 30);
             
             // Add momentum for fast swipes
-            if (velocity > 0.4) {
-                steps += Math.floor(velocity * 8);
+            if (velocity > 0.5) {
+                steps += Math.round(velocity * 5);
             }
             
-            steps = Math.max(1, Math.min(steps, 15)); // Limit steps
+            steps = Math.max(1, Math.min(steps, 10));
             this.animateMovement(direction * steps);
-        } else {
-            // Reset transform if no significant movement
-            this.resetTransform();
         }
         
         this.startX = 0;
@@ -112,8 +101,6 @@ class DialController {
     
     handleClick(e) {
         if (this.isDragging || this.isAnimating || this.startX !== 0) return;
-        
-        // Simple click advances by 1
         this.changeEpisode(1);
     }
     
@@ -128,25 +115,13 @@ class DialController {
         const animate = () => {
             if (currentStep >= totalSteps) {
                 this.isAnimating = false;
-                this.resetTransform();
                 return;
             }
             
-            // Update episode
             this.changeEpisode(direction);
-            
-            // Visual animation with easing
-            const progress = currentStep / totalSteps;
-            const easing = 1 - Math.pow(1 - progress, 2); // Ease out
-            const rotation = (1 - easing) * direction * 90;
-            const scale = 1 + (1 - easing) * 0.1;
-            
-            this.element.style.transform = `scale(${scale}) rotate(${rotation}deg)`;
-            
             currentStep++;
             
-            // Progressive delay for deceleration
-            const delay = 60 + (currentStep * 15);
+            const delay = 80 + (currentStep * 20);
             setTimeout(animate, delay);
         };
         
@@ -157,16 +132,11 @@ class DialController {
         const maxEpisode = episodes.length - 1;
         currentEpisode = (currentEpisode + direction + episodes.length) % episodes.length;
         
-        // Skip episode 0 when going backwards from episode 1
         if (currentEpisode === 0 && direction === -1) {
             currentEpisode = maxEpisode;
         }
         
         updateDisplay();
-    }
-    
-    resetTransform() {
-        this.element.style.transform = '';
     }
     
     getClientX(e) {
@@ -176,14 +146,11 @@ class DialController {
 
 // Initialize when DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
-    // Create dial element
-    const dialContainer = document.getElementById('dials');
-    dialContainer.innerHTML = '<div class="dial">0</div>';
+    const buttonContainer = document.getElementById('dials');
+    buttonContainer.innerHTML = '<div class="episode-button">0</div>';
     
-    // Initialize dial controller
-    const dialElement = document.querySelector('.dial');
-    new DialController(dialElement);
+    const buttonElement = document.querySelector('.episode-button');
+    new ButtonController(buttonElement);
     
-    // Load episodes
     loadEpisodes();
 });
