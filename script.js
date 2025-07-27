@@ -1,4 +1,5 @@
-import { episodes } from './data/generatedEpisodes.js';
+// Force reload of episodes data
+import { episodes } from './data/generatedEpisodes.js?v=' + Date.now();
 
 let numbers = [0, 0, 0];
 
