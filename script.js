@@ -26,6 +26,12 @@ document.getElementById('dials').innerHTML = `<div class="dial">${String(current
 
 const dialElement = document.querySelector('.dial');
 
+// Create instruction arrow
+const instructionArrow = document.createElement('div');
+instructionArrow.className = 'instruction-arrow';
+instructionArrow.innerHTML = '↔';
+dialElement.appendChild(instructionArrow);
+
 // Create invisible touch area for better mobile interaction
 const touchArea = document.createElement('div');
 touchArea.style.position = 'absolute';
@@ -57,6 +63,12 @@ const swipeSensitivity = 8;
 
 // Touch event handlers
 function handleTouchStart(e) {
+    // Hide instruction arrow on first touch
+    const arrow = document.querySelector('.instruction-arrow');
+    if (arrow) {
+        arrow.style.display = 'none';
+    }
+    
     touchStartY = e.touches[0].clientY;
     touchStartX = e.touches[0].clientX;
     e.preventDefault();
