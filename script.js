@@ -90,5 +90,12 @@ function update() {
     });
     
     const episodeNum = numbers[0] * 100 + numbers[1] * 10 + numbers[2];
-    document.getElementById('episode').innerHTML = episodes[episodeNum] || "Loading...";
+    
+    // Only show "Loading..." if episodes haven't been loaded yet
+    // Otherwise show the episode or empty string for non-existent episodes
+    if (episodes.length === 0) {
+        document.getElementById('episode').innerHTML = "Loading...";
+    } else {
+        document.getElementById('episode').innerHTML = episodes[episodeNum] || "";
+    }
 }
