@@ -41,6 +41,7 @@ function spinDown() {
 
 let touchStartY = 0;
 let touchStartX = 0;
+const swipeSensitivity = 30; // Pixels per episode change
 
 function handleTouchStart(e) {
     touchStartY = e.touches[0].clientY;
@@ -57,12 +58,20 @@ function handleTouchEnd(e) {
     
     // Check if horizontal swipe is more significant than vertical
     if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > threshold) {
+        // Calculate how many episodes to change based on swipe distance
+        const swipeDistance = Math.abs(deltaX);
+        const episodeChanges = Math.max(1, Math.floor(swipeDistance / swipeSensitivity));
+        
         if (deltaX > 0) {
-            // Swiped left (backward)
-            spinDown();
+            // Swiped left (backward) - decrease episode number
+            for (let i = 0; i < episodeChanges; i++) {
+                spinDown();
+            }
         } else {
-            // Swiped right (forward)
-            spin();
+            // Swiped right (forward) - increase episode number
+            for (let i = 0; i < episodeChanges; i++) {
+                spin();
+            }
         }
     } else {
         // Default to forward if no clear swipe direction
