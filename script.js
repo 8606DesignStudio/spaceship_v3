@@ -16,7 +16,7 @@ async function loadEpisodes() {
     }
 }
 
-let currentNumber = 146; // Start on the most recent episode
+let currentNumber = 0;
 const maxEpisode = 146; // Update this when new episodes are added
 
 // Initialize episodes loading
