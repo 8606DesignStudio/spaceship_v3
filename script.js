@@ -29,7 +29,7 @@ const dialElement = document.querySelector('.dial');
 // Create instruction arrow
 const instructionArrow = document.createElement('div');
 instructionArrow.className = 'instruction-arrow';
-instructionArrow.innerHTML = '↔';
+instructionArrow.innerHTML = '<i class="fa-solid fa-arrows-left-right"></i>';
 dialElement.appendChild(instructionArrow);
 
 // Create invisible touch area for better mobile interaction
