@@ -85,10 +85,8 @@ function createShootingStar() {
 // Generate shooting stars at random intervals
 function startShootingStars() {
     setInterval(() => {
-        if (Math.random() < 0.3) { // 30% chance every interval
-            createShootingStar();
-        }
-    }, 800); // Check every 800ms
+        createShootingStar();
+    }, 1000); // Create a shooting star every 1 second
 }
 
 // Start shooting stars when page loads
