@@ -14,10 +14,77 @@
         body {
             height: 100vh;
             background: #000000 url('public/cockpit.jpg') center top/100% auto no-repeat;
+            position: relative;
+            overflow: hidden;
+            touch-action: none; /* Prevent default touch behaviors */
+        }
+
+        .coordinates {
+            position: fixed;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #FFD700;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 1.5rem;
+            font-weight: bold;
+            text-shadow: 
+                0 0 5px rgba(255, 215, 0, 0.8),
+                0 0 10px rgba(255, 215, 0, 0.6),
+                2px 2px 4px rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 10px 20px;
+            border-radius: 8px;
+            backdrop-filter: blur(5px);
         }
     </style>
 </head>
 <body>
+    <div id="coordinates" class="coordinates">Touch to see coordinates</div>
     
+    <script>
+        const coordinatesDisplay = document.getElementById('coordinates');
+        
+        // Function to update coordinate display
+        function updateCoordinates(x, y) {
+            coordinatesDisplay.textContent = `X: ${Math.round(x)}, Y: ${Math.round(y)}`;
+        }
+        
+        // Handle touch events (stylus/finger)
+        document.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            updateCoordinates(touch.clientX, touch.clientY);
+        });
+        
+        document.addEventListener('touchmove', (e) => {
+            e.preventDefault();
+            const touch = e.touches[0];
+            updateCoordinates(touch.clientX, touch.clientY);
+        });
+        
+        // Also handle mouse events for desktop testing
+        document.addEventListener('mousedown', (e) => {
+            updateCoordinates(e.clientX, e.clientY);
+        });
+        
+        document.addEventListener('mousemove', (e) => {
+            if (e.buttons > 0) { // Only when mouse button is pressed
+                updateCoordinates(e.clientX, e.clientY);
+            }
+        });
+        
+        // Handle pointer events (modern approach that works with stylus)
+        document.addEventListener('pointerdown', (e) => {
+            updateCoordinates(e.clientX, e.clientY);
+        });
+        
+        document.addEventListener('pointermove', (e) => {
+            if (e.pressure > 0 || e.buttons > 0) { // When stylus/mouse is pressed
+                updateCoordinates(e.clientX, e.clientY);
+            }
+        });
+    </script>
 </body>
 </html>
