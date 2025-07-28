@@ -30,6 +30,7 @@ body {
     overflow: hidden;
     pointer-events: none;
     z-index: 1;
+    background: rgba(128, 128, 128, 0.5);
 }
 
 /* Individual shooting star styling */
