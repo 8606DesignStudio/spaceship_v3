@@ -44,6 +44,58 @@ touchArea.style.zIndex = '10';
 
 document.getElementById('dials').appendChild(touchArea);
 
+// Shooting stars functionality
+function createShootingStar() {
+    const container = document.getElementById('shooting-stars-container');
+    if (!container) return;
+    
+    const star = document.createElement('div');
+    star.className = 'shooting-star';
+    
+    // Random starting position along the top and left edges
+    const startX = Math.random() * 30; // Start from left 30% of container
+    const startY = Math.random() * 30; // Start from top 30% of container
+    
+    star.style.left = startX + '%';
+    star.style.top = startY + '%';
+    
+    // Random animation duration between 1-3 seconds
+    const duration = 1 + Math.random() * 2;
+    star.style.animationDuration = duration + 's';
+    
+    // Random delay before starting
+    const delay = Math.random() * 0.5;
+    star.style.animationDelay = delay + 's';
+    
+    container.appendChild(star);
+    
+    // Add active class to trigger animation
+    setTimeout(() => {
+        star.classList.add('active');
+    }, 10);
+    
+    // Remove star after animation completes
+    star.addEventListener('animationend', () => {
+        if (star.parentNode) {
+            star.parentNode.removeChild(star);
+        }
+    });
+}
+
+// Generate shooting stars at random intervals
+function startShootingStars() {
+    setInterval(() => {
+        if (Math.random() < 0.3) { // 30% chance every interval
+            createShootingStar();
+        }
+    }, 800); // Check every 800ms
+}
+
+// Start shooting stars when page loads
+window.addEventListener('load', () => {
+    setTimeout(startShootingStars, 2000); // Wait 2 seconds after page load
+});
+
 // Event listeners
 dialElement.addEventListener('click', () => spin());
 touchArea.addEventListener('touchstart', (e) => handleTouchStart(e));

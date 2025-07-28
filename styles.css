@@ -19,6 +19,70 @@ body {
     position: relative;
 }
 
+/* Shooting stars container - positioned within the cockpit window */
+#shooting-stars-container {
+    position: absolute;
+    top: 15%;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 45%;
+    height: 35%;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Individual shooting star styling */
+.shooting-star {
+    position: absolute;
+    width: 2px;
+    height: 2px;
+    background: white;
+    border-radius: 50%;
+    opacity: 0;
+    box-shadow: 
+        0 0 6px 2px rgba(255, 255, 255, 0.8),
+        0 0 12px 4px rgba(135, 206, 235, 0.6),
+        0 0 18px 6px rgba(75, 184, 233, 0.4);
+}
+
+/* Shooting star tail effect */
+.shooting-star::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 50px;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        rgba(255, 255, 255, 0.8) 0%, 
+        rgba(135, 206, 235, 0.6) 50%, 
+        transparent 100%);
+    transform: translateX(-50px);
+    border-radius: 1px;
+}
+
+/* Shooting star animation */
+@keyframes shoot {
+    0% {
+        transform: translateX(-60px) translateY(-60px);
+        opacity: 0;
+    }
+    10% {
+        opacity: 1;
+    }
+    90% {
+        opacity: 1;
+    }
+    100% {
+        transform: translateX(calc(45vw + 60px)) translateY(calc(35vh + 60px));
+        opacity: 0;
+    }
+}
+
+.shooting-star.active {
+    animation: shoot linear forwards;
+}
 
 .episode {
     position: absolute;
