@@ -52,9 +52,9 @@ function createShootingStar() {
     const star = document.createElement('div');
     star.className = 'shooting-star';
     
-    // Random starting position along the top and left edges
-    const startX = Math.random() * 30; // Start from left 30% of container
-    const startY = Math.random() * 30; // Start from top 30% of container
+    // Fixed starting position for testing - top right area
+    const startX = 90; // Start from right side of container
+    const startY = 10; // Start from top of container
     
     star.style.left = startX + '%';
     star.style.top = startY + '%';
