@@ -22,8 +22,8 @@ body {
 /* Shooting stars container - positioned within the cockpit window */
 #shooting-stars-container {
     position: absolute;
-    top: 15%;
-    left: 50%;
+    top: 0%;
+    left: 0%;
     transform: translateX(-50%);
     width: 100%;
     height: 100%;
