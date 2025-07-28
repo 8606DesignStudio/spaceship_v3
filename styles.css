@@ -31,13 +31,13 @@ body {
     z-index: 1;
     background: rgba(128, 128, 128, 0.5);
     clip-path: polygon(
-        22% 15%,     /* top-left corner */
-        78% 15%,     /* top-right corner */
-        100% 25%,   /* right-top corner */
-        100% 75%,   /* right-bottom corner */
-        80% 100%,   /* bottom-right corner */
-        20% 100%,   /* bottom-left corner */
-        15% 75%,     /* left-bottom corner */
+        22% 17%,     /* top-left corner */
+        78% 17%,     /* top-right corner */
+        85% 25%,   /* right-top corner */
+        83% 75%,   /* right-bottom corner */
+        80% 48%,   /* bottom-right corner */
+        20% 48%,   /* bottom-left corner */
+        15% 73%,     /* left-bottom corner */
         15% 25%      /* left-top corner */
     );
 }
