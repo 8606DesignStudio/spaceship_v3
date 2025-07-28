@@ -22,7 +22,7 @@ body {
 
 .episode {
     position: absolute;
-    top: 22%;
+    top: 19%;
     left: 50%;
     transform: translateX(-50%) perspective(400px) rotateX(-25deg);
     width: 60%;
