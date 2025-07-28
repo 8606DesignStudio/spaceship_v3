@@ -31,14 +31,14 @@ body {
     z-index: 1;
     background: rgba(128, 128, 128, 0.5);
     clip-path: polygon(
-        71% 19%,     /* 1. top-right corner (1 o'clock) */
-        86% 26%,     /* 2. right-top corner (2 o'clock) */
-        83% 35%,     /* 3. right-bottom corner (4 o'clock) */
-        80% 38%,     /* 4. bottom-right corner (5 o'clock) */
-        20% 48%,     /* 5. bottom-left corner (7 o'clock) */
-        15% 45%,     /* 6. left-bottom corner (8 o'clock) */
-        15% 25%,     /* 7. left-top corner (10 o'clock) */
-        22% 17%      /* 8. top-left corner (11 o'clock) */
+        73% 18%,     /* 1. top-right corner (1 o'clock) */
+        86.5% 26%,     /* 2. right-top corner (2 o'clock) */
+        83.5% 38%,     /* 3. right-bottom corner (4 o'clock) */
+        78.5% 42%,     /* 4. bottom-right corner (5 o'clock) */
+        21% 42%,     /* 5. bottom-left corner (7 o'clock) */
+        16% 38%,     /* 6. left-bottom corner (8 o'clock) */
+        15% 27%,     /* 7. left-top corner (10 o'clock) */
+        25% 19%      /* 8. top-left corner (11 o'clock) */
     );
 }
 
