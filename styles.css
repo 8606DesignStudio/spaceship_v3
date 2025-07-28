@@ -22,8 +22,8 @@ body {
 /* Shooting stars container - positioned within the cockpit window */
 #shooting-stars-container {
     position: absolute;
-    top: 0%;
-    left: 0%;
+    top: 15%;
+    left: 50%;
     transform: translateX(-50%);
     width: 100%;
     height: 100%;
@@ -34,10 +34,10 @@ body {
     clip-path: polygon(
         78% 17%,     /* 1. top-right corner (1 o'clock) */
         85% 25%,     /* 2. right-top corner (2 o'clock) */
-        83% 43%,     /* 3. right-bottom corner (4 o'clock) */
+        83% 75%,     /* 3. right-bottom corner (4 o'clock) */
         80% 48%,     /* 4. bottom-right corner (5 o'clock) */
         20% 48%,     /* 5. bottom-left corner (7 o'clock) */
-        15% 43%,     /* 6. left-bottom corner (8 o'clock) */
+        15% 73%,     /* 6. left-bottom corner (8 o'clock) */
         15% 25%,     /* 7. left-top corner (10 o'clock) */
         22% 17%      /* 8. top-left corner (11 o'clock) */
     );
