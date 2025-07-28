@@ -59,7 +59,7 @@ function spin() {
 // Touch handling variables
 let touchStartY = 0;
 let touchStartX = 0;
-const swipeSensitivity = 16;
+const swipeSensitivity = 8;
 
 // Touch event handlers
 function handleTouchStart(e) {
