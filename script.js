@@ -52,20 +52,19 @@ function createShootingStar() {
     const star = document.createElement('div');
     star.className = 'shooting-star';
     
-    // Fixed starting position for testing - top right area
+    // Fixed starting position - top right area
     const startX = 90; // Start from right side of container
     const startY = 10; // Start from top of container
     
     star.style.left = startX + '%';
     star.style.top = startY + '%';
     
-    // Random animation duration between 1-3 seconds
-    const duration = 1 + Math.random() * 2;
+    // Fixed animation duration
+    const duration = 2;
     star.style.animationDuration = duration + 's';
     
-    // Random delay before starting
-    const delay = Math.random() * 0.5;
-    star.style.animationDelay = delay + 's';
+    // No delay - start immediately
+    star.style.animationDelay = '0s';
     
     container.appendChild(star);
     
@@ -82,7 +81,7 @@ function createShootingStar() {
     });
 }
 
-// Generate shooting stars at random intervals
+// Generate shooting stars at uniform intervals
 function startShootingStars() {
     setInterval(() => {
         createShootingStar();
