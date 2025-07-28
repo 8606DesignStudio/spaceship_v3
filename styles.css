@@ -37,8 +37,8 @@ body {
         100% 75%,   /* right-bottom corner */
         80% 100%,   /* bottom-right corner */
         20% 100%,   /* bottom-left corner */
-        0% 75%,     /* left-bottom corner */
-        0% 25%      /* left-top corner */
+        15% 75%,     /* left-bottom corner */
+        15% 25%      /* left-top corner */
     );
 }
 
