@@ -19,19 +19,26 @@
             font-family: 'Quicksand', sans-serif;
             height: 100vh;
             min-height: 100vh;
-            min-height: 200vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            background: #000050 url('public/cockpit.jpg') top center/100% 200vh no-repeat;
-            background-size: 100% auto;
+            background: #000050 url('public/cockpit.jpg') center/cover no-repeat;
             background-attachment: fixed;
+            transform: rotate(90deg);
+            transform-origin: center center;
+            width: 100vh;
+            height: 100vw;
+            margin-left: calc((100vw - 100vh) / 2);
+            margin-top: calc((100vh - 100vw) / 2);
             color: white;
             flex-direction: column;
             position: relative;
             overflow: hidden;
-            overflow-y: auto;
             /* Prevent layout shifts from viewport changes */
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
         }
 
         .back-button {
