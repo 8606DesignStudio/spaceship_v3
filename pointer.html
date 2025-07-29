@@ -38,9 +38,45 @@
             border-radius: 8px;
             backdrop-filter: blur(5px);
         }
+        
+        .back-button {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+        }
+
+        .back-button a {
+            display: inline-block;
+            padding: 8px 16px;
+            background: linear-gradient(135deg, #ffd700, #ffb347);
+            color: #8b4513;
+            text-decoration: none;
+            border-radius: 6px;
+            font-family: 'Quicksand', sans-serif;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            box-shadow: 
+                0 2px 8px rgba(255, 215, 0, 0.3),
+                0 0 0 1px rgba(255, 255, 255, 0.1);
+        }
+
+        .back-button a:hover {
+            background: linear-gradient(135deg, #ffed4e, #ffd700);
+            transform: translateY(-1px);
+            box-shadow: 
+                0 4px 12px rgba(255, 215, 0, 0.4),
+                0 0 0 1px rgba(255, 255, 255, 0.2);
+        }
     </style>
 </head>
 <body>
+    <!-- Back button -->
+    <div class="back-button">
+        <a href="index.html">← Back</a>
+    </div>
+    
     <div id="coordinates" class="coordinates">Touch to see coordinates</div>
     
     <script>
