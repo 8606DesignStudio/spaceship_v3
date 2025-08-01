@@ -256,28 +256,13 @@ body {
     justify-content: center;
     cursor: pointer;
     transition: transform 0.2s;
-    font-family: 'Courier New', 'Monaco', 'Lucida Console', monospace;
-    font-size: 2rem;
-    font-weight: bold;
-    color: #00ff41;
-    text-shadow: 
-        0 0 5px #00ff41,
-        0 0 10px #00ff41,
-        0 0 15px #00ff41,
-        0 0 20px #00ff41;
-    letter-spacing: 2px;
+    font-size: 1.7rem;
+    font-weight: 550;
+    color: #edb004;
 }
 
 .dial:hover { 
-    transform: scale(1.05);
-    text-shadow: 
-        0 0 8px #00ff41,
-        0 0 15px #00ff41,
-        0 0 25px #00ff41,
-        0 0 35px #00ff41;
-    box-shadow: 
-        inset 0 0 15px rgba(0, 255, 65, 0.3),
-        0 0 30px rgba(0, 255, 65, 0.5);
+    transform: scale(1.05); 
 }
 
 .instruction-arrow {
