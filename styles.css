@@ -263,7 +263,6 @@ body {
     font-weight: bold;
     color: #8b4513;
     clip-path: polygon(10% 0%, 90% 0%, 100% 100%, 0% 100%);
-    border: 4px solid #b8860b;
 }
 
 .dial:hover { 
