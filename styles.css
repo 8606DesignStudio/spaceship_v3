@@ -281,7 +281,11 @@ body {
 
 .dial span {
     position: relative;
-    z-index: 2;
+    z-index: 10;
+    display: block;
+    color: #8b4513;
+    font-size: 2rem;
+    font-weight: bold;
 }
 
 .dial:hover { 
