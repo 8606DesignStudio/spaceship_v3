@@ -127,19 +127,20 @@ function handleTouchMove(e) {
     const currentTouchX = e.touches[0].clientX;
     const totalDeltaX = currentTouchX - touchStartX;
     
-    if (Math.abs(totalDeltaX) > 10) {
-        const episodeChange = totalDeltaX / swipeSensitivity;
-        const newNumber = Math.floor(episodeChange);
+    if (Math.abs(totalDeltaX) > swipeSensitivity) {
+        // Determine direction: positive = right, negative = left
+        const direction = totalDeltaX > 0 ? 1 : -1;
         
-        if (newNumber !== 0) {
-            currentNumber = (currentNumber + newNumber) % (maxEpisode + 1);
-            if (currentNumber < 0) {
-                currentNumber += (maxEpisode + 1);
-            }
-            touchStartX = currentTouchX;
-            updateDialOnly();
-            updateEpisodeContent();
+        // Apply single step change
+        currentNumber = (currentNumber + direction) % (maxEpisode + 1);
+        if (currentNumber < 0) {
+            currentNumber += (maxEpisode + 1);
         }
+        
+        // Reset touch start position to prevent multiple changes
+        touchStartX = currentTouchX;
+        updateDialOnly();
+        updateEpisodeContent();
     }
     
     e.preventDefault();
